@@ -5,32 +5,41 @@
 TypingMachine::TypingMachine() {
 	_pPreviousNode = nullptr;
 	_pNextNode = nullptr;
+	_length = 0;
 }
 
 void TypingMachine::HomeKey() {
-	while (_pPreviousNode) _pPreviousNode = _pPreviousNode->GetPreviousNode();
+	while (_pPreviousNode) LeftKey();
 	return;
 }
 
 void TypingMachine::EndKey() {
-	while (_pNextNode->GetNextNode()) _pNextNode = _pNextNode->GetNextNode();
+	while (_pNextNode) RightKey();
 	return;
 }
 
 void TypingMachine::LeftKey() {
-	if (_pPreviousNode) _pPreviousNode = _pPreviousNode->GetPreviousNode();
+	if (_pPreviousNode) {
+		_pNextNode = _pPreviousNode;
+		_pPreviousNode = _pPreviousNode->GetPreviousNode();
+	}
 	return;
 }
 
 void TypingMachine::RightKey() {
-	if (_pNextNode) _pNextNode = _pNextNode->GetNextNode();
+	if (_pNextNode) {
+		_pPreviousNode = _pNextNode;
+		_pNextNode = _pNextNode->GetNextNode();
+	}
 	return;
 }
 
 bool TypingMachine::TypeKey(char key) {
-	if (key < 0x20 || key > 0x7E) return false;
-	if (_pPreviousNode) _pPreviousNode->InsertNextNode(key);
-	else _pPreviousNode = new Node(key);
+	if (key < 0x20 || key > 0x7E || _length >= 100) return false;
+	if (_pPreviousNode)  _pPreviousNode = _pPreviousNode->InsertNextNode(key);
+	else if (_pNextNode) _pPreviousNode = _pNextNode->InsertPreviousNode(key);
+	else                 _pPreviousNode = new Node(key);
+	++_length;
 	return true;
 }
 
@@ -49,7 +58,7 @@ bool TypingMachine::EraseKey() {
 			delete _pPreviousNode;
 			_pPreviousNode = nullptr;
 		}
-
+		--_length;
 		return true;
 	}
 	return false;
@@ -57,19 +66,18 @@ bool TypingMachine::EraseKey() {
 
 std::string TypingMachine::Print(char separator) {
 	std::string result = "";
+
 	Node* pNode = _pPreviousNode;
-	if (pNode)
-	{
+	if (pNode) do {
 		result = pNode->GetData() + result;
-		while (pNode->GetPreviousNode()) pNode = pNode->GetPreviousNode();
-	}
-	result = result + separator;
+		pNode = pNode->GetPreviousNode();
+	} while (pNode);
+	if (separator != 0) result = result + separator;
 	pNode = _pNextNode;
-	if (pNode)
-	{
+	if (pNode) do {
 		result += pNode->GetData();
-		while (pNode->GetNextNode()) pNode = pNode->GetNextNode();
-	}
+		pNode = pNode->GetNextNode();
+	} while (pNode);
 
 	return result;
 }

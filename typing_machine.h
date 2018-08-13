@@ -20,6 +20,7 @@ public:
 private:
 	Node* _pPreviousNode;
 	Node* _pNextNode;
+	int _length;
 };
 
 #endif  // TYPING_MACHINE_H_
