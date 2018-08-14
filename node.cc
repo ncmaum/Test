@@ -2,10 +2,9 @@
 
 #include "node.h"
 
-Node::Node(char data) {
-	_data = data;
-	_pPreviousNode = nullptr;
-	_pNextNode = nullptr;
+Node::Node(char data)
+	: _pPreviousNode(nullptr), _pNextNode(nullptr), _data(data)
+{
 }
 
 char Node::GetData() {
@@ -22,28 +21,31 @@ Node* Node::GetNextNode() {
 
 Node* Node::InsertPreviousNode(char data) {
 	Node* pNewNode = new Node(data);
-	pNewNode->SetPreviousNode(_pPreviousNode);
-	pNewNode->SetNextNode(this);
-	if (_pPreviousNode) _pPreviousNode->SetNextNode(pNewNode);
+	pNewNode->_pPreviousNode = _pPreviousNode;
+	pNewNode->_pNextNode     = this;
+	if (_pPreviousNode) 
+		_pPreviousNode->_pNextNode = pNewNode;
 	_pPreviousNode = pNewNode;
 	return pNewNode;
 }
 
 Node* Node::InsertNextNode(char data) {
 	Node* pNewNode = new Node(data);
-	pNewNode->SetPreviousNode(this);
-	pNewNode->SetNextNode(_pNextNode);
-	if (_pNextNode) _pNextNode->SetPreviousNode(pNewNode);
+	pNewNode->_pPreviousNode = this;
+	pNewNode->_pNextNode     = _pNextNode;
+	if (_pNextNode) 
+		_pNextNode->_pPreviousNode = pNewNode;
 	_pNextNode = pNewNode;
 	return pNewNode;
 }
 
 bool Node::ErasePreviousNode() {
 	if (_pPreviousNode) {
-		Node* pNode = _pPreviousNode->GetPreviousNode();
-		delete _pPreviousNode;
-		this->SetPreviousNode(pNode);
-		if (pNode) pNode->SetNextNode(this);
+		Node* pNode    = _pPreviousNode;
+		_pPreviousNode = _pPreviousNode->GetPreviousNode();
+		if (_pPreviousNode)
+			_pPreviousNode->_pNextNode = this;
+		delete pNode;
 		return true;
 	}
 	return false;
@@ -51,10 +53,11 @@ bool Node::ErasePreviousNode() {
 
 bool Node::EraseNextNode() {
 	if (_pNextNode) {
-		Node* pNode = _pNextNode->GetNextNode();
-		delete _pNextNode;
-		this->SetNextNode(pNode);
-		if (pNode) pNode->SetPreviousNode(this);
+		Node* pNode = _pNextNode;
+		_pNextNode  = _pNextNode->GetNextNode();
+		if (_pNextNode) 
+			_pNextNode->_pPreviousNode = this;
+		delete pNode;
 		return true;
 	}
 	return false;

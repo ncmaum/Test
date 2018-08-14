@@ -18,9 +18,6 @@ private:
 	Node* _pPreviousNode;
 	Node* _pNextNode;
 	char _data;
-
-	void SetPreviousNode(Node* pNode) { _pPreviousNode = pNode; }
-	void SetNextNode(Node* pNode) { _pNextNode = pNode; }
 };
 
 #endif  // NODE_H_
