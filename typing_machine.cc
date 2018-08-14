@@ -71,7 +71,7 @@ std::string TypingMachine::Print(char separator) {
 	while (pNode) {
 		result = pNode->GetData() + result;
 		pNode = pNode->GetPreviousNode();
-	} while (pNode);
+	};
 
 	if (separator != 0) result = result + separator;
 
